@@ -127,6 +127,117 @@ data_table.Load_Corrected_Load = ...
 % Now the 'Load_Corrected_Load' column values are in milli-Newtons.
 
 
+%% Plotting the Data
+%%%%% Creating all figures in one Plot %%%%%%%%%
+% Create a figure window
+figure;
+
+% First subplot for Displacement vs. Load
+subplot(1, 3, 1); % 1 row, 3 columns, 1st subplot
+plot(data_table.Time_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 14);
+title('Time vs. Load'); % Optional: Add a title to the subplot
+set(gca, 'Box', 'on', 'GridLineStyle', '-', 'LineWidth', 1, 'FontName', 'Times New Roman', 'FontSize', 14, 'TickDir', 'out');
+grid on;
+
+% Second subplot for Time vs. Displacement
+subplot(1, 3, 2); % 1 row, 3 columns, 2nd subplot
+plot(data_table.Time_Corrected_Displacement, data_table.Displacement_Corrected_Displacement, 'LineWidth', 2);
+xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 14);
+title('Time vs. Displacement'); % Optional: Add a title to the subplot
+set(gca, 'Box', 'on', 'GridLineStyle', '-', 'LineWidth', 1, 'FontName', 'Times New Roman', 'FontSize', 14, 'TickDir', 'out');
+grid on;
+
+% Third subplot for Time vs. Load
+subplot(1, 3, 3); % 1 row, 3 columns, 3rd subplot
+plot(data_table.Displacement_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+xlabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 14);
+ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 14);
+title('Displacement vs. Load'); % Optional: Add a title to the subplot
+set(gca, 'Box', 'on', 'GridLineStyle', '-', 'LineWidth', 1, 'FontName', 'Times New Roman', 'FontSize', 14, 'TickDir', 'out');
+grid on;
+
+% Adjust the figure properties for better spacing
+set(gcf, 'Color', 'w', 'Position', [100, 100, 1200, 400]); % Set the figure size and position
+
+% If you want to save this combined figure for inclusion in a publication, you can do so with high resolution
+% Uncomment the following line to save the figure
+% print('combined_plots','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
+
+%%%%%%%%%%%%% Plotting Individually each plot %%%%%%%%%%%%%%%%
+% 
+% % Plotting the data
+% figure; % Open a new figure window
+% plot(data_table.Time_Corrected_Displacement, data_table.Displacement_Corrected_Displacement, 'LineWidth', 2);
+% 
+% % Setting the axes labels with LaTeX interpreter for symbols
+% xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 18);
+% ylabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 18);
+% 
+% % Beautifications for nice visualization
+% set(gca, 'Box', 'on'); % Adding a box around the plot
+% set(gca, 'GridLineStyle', '-'); % Setting grid line style
+% grid on; % Adding a grid to the plot for easier readability of values
+% set(gcf, 'Color', 'w'); % Setting the figure background to white
+% set(gca, 'LineWidth', 1); % Making the axes lines thicker for visibility
+% set(gca, 'FontName', 'Times New Roman'); % Set the font to Times New Roman for publication standards
+% set(gca, 'FontSize', 14); % Setting a larger font size for the axes
+% set(gca, 'TickDir', 'in'); % Setting the tick direction to out
+% 
+% % If you want to save this figure for inclusion in a publication, you can do so with high resolution
+% % Uncomment the following line to save the figure
+% % print('myplot_time_vs_displacement','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
+% 
+% 
+% 
+% % Plotting the data
+% figure; % Open a new figure window
+% plot(data_table.Time_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+% 
+% % Setting the axes labels with LaTeX interpreter for symbols
+% xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 18);
+% ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 18);
+% 
+% % Beautifications for nice visualization
+% set(gca, 'Box', 'on'); % Adding a box around the plot
+% set(gca, 'GridLineStyle', '-'); % Setting grid line style
+% grid on; % Adding a grid to the plot for easier readability of values
+% set(gcf, 'Color', 'w'); % Setting the figure background to white
+% set(gca, 'LineWidth', 1); % Making the axes lines thicker for visibility
+% set(gca, 'FontName', 'Times New Roman'); % Set the font to Times New Roman for publication standards
+% set(gca, 'FontSize', 14); % Setting a larger font size for the axes
+% set(gca, 'TickDir', 'in'); % Setting the tick direction to in
+% 
+% % If you want to save this figure for inclusion in a publication, you can do so with high resolution
+% % Uncomment the following line to save the figure
+% % print('myplot_time_vs_load','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
+% 
+% 
+% 
+% % Plotting the data
+% figure; % Open a new figure window
+% plot(data_table.Displacement_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+% 
+% % Setting the axes labels with LaTeX interpreter for symbols
+% xlabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 18);
+% ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 18);
+% 
+% % Beautifications for nice visualization
+% set(gca, 'Box', 'on'); % Adding a box around the plot
+% set(gca, 'GridLineStyle', '-'); % Setting grid line style
+% grid on; % Adding a grid to the plot for easier readability of values
+% set(gcf, 'Color', 'w'); % Setting the figure background to white
+% set(gca, 'LineWidth', 1); % Making the axes lines thicker for visibility
+% set(gca, 'FontName', 'Times New Roman'); % Set the font to Times New Roman for publication standards
+% set(gca, 'FontSize', 14); % Setting a larger font size for the axes
+% set(gca, 'TickDir', 'in'); % Setting the tick direction to out
+% 
+% % If you want to save this figure for inclusion in a publication, you can do so with high resolution
+% % Uncomment the following line to save the figure
+% % print('myplot','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
+
 
 
 
