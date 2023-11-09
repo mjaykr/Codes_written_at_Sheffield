@@ -77,5 +77,38 @@ end
 
 
 
+%% Zero Correction 
+
+% Get the initial value of 'Displacement_Corrected_Displacement'
+initial_displacement_value = data_table.Displacement_Corrected_Displacement(1);
+
+% Check if 'Displacement_Corrected_Displacement' starts with negative values
+if initial_displacement_value < 0
+    % Apply zero correction from the start
+    correction_value = abs(data_table.Time_Corrected_Displacement(1));
+    data_table.Time_Corrected_Displacement = data_table.Time_Corrected_Displacement + correction_value;
+    data_table.Time_Corrected_Displacement(1) = 0; % Set the first cell to zero after correction
+elseif initial_displacement_value == 0
+    % Find the last zero value before a non-zero value in 'Displacement_Corrected_Displacement'
+    last_zero_index = find(data_table.Displacement_Corrected_Displacement, 1, 'first') - 1;
+    if isempty(last_zero_index)
+        % If the entire column is zero, then we take the last index
+        last_zero_index = size(data_table.Displacement_Corrected_Displacement, 1);
+    end
+    % Check if there are multiple zeros at the beginning
+    if last_zero_index > 1
+        % Apply zero correction from the last zero value
+        correction_value = abs(data_table.Time_Corrected_Displacement(last_zero_index));
+        data_table.Time_Corrected_Displacement = data_table.Time_Corrected_Displacement + correction_value;
+        % Set the time of zero displacement to zero
+        data_table.Time_Corrected_Displacement(last_zero_index) = 0;
+    end
+end
+% Now the 'Time_Corrected_Displacement' column has been zero-corrected based on 'Displacement_Corrected_Displacement' conditions.
+
+
+
+
+
 
 
