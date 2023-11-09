@@ -56,3 +56,26 @@ data_table = cell2table(processed_data(2:end, :), 'VariableNames', headers);
 % Assign the table with the converted data to the base workspace with the variable name 'converted_data'.
 % This allows you to access the table from the MATLAB workspace.
 assignin('base', 'converted_data', data_table);
+
+%% Removing the Rows having Positive or Zero time before negative time
+% Find the index of the first negative value in the 'Time_Corrected_Displacement' column
+is_negative = data_table.Time_Corrected_Displacement < 0;
+
+% Find the first occurrence of a negative value
+first_negative_index = find(is_negative, 1, 'first');
+
+% Check if there is at least one negative value
+if ~isempty(first_negative_index)
+    % Check if the first value is non-negative and if there are positive values before the first negative value
+    if first_negative_index > 1 && data_table.Time_Corrected_Displacement(1) >= 0
+        % Remove the rows from the start until the first negative value (excluding the first negative value)
+        data_table(1:first_negative_index-1, :) = [];
+    end
+end
+
+% If there are no negative values, no rows are removed.
+
+
+
+
+
