@@ -106,6 +106,26 @@ elseif initial_displacement_value == 0
 end
 % Now the 'Time_Corrected_Displacement' column has been zero-corrected based on 'Displacement_Corrected_Displacement' conditions.
 
+%% Unit Conversions from SI to the relevant unit for Plotting
+
+% Conversion factor from meters to micrometers
+meters_to_micrometers = 1e6;
+
+% Convert 'Displacement_Corrected_Displacement' from meters to micrometers
+data_table.Displacement_Corrected_Displacement = ...
+    data_table.Displacement_Corrected_Displacement * meters_to_micrometers;
+
+% Now the 'Displacement_Corrected_Displacement' column values are in micrometers.
+
+% Conversion factor from Newtons to milli-Newtons
+newtons_to_milli_newtons = 1e3;
+
+% Convert 'Load_Corrected_Load' from Newtons to milli-Newtons
+data_table.Load_Corrected_Load = ...
+    data_table.Load_Corrected_Load * newtons_to_milli_newtons;
+
+% Now the 'Load_Corrected_Load' column values are in milli-Newtons.
+
 
 
 
