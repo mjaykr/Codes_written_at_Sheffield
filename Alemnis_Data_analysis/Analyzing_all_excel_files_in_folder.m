@@ -256,9 +256,15 @@ for k = 1:length(files)
 
 
 
-    [~, name] = fileparts(filename); % Extract the base name without extension
+   [~, name] = fileparts(filename); % Extract the base name without extension
     new_filename = sprintf('%s_processed.xlsx', name);
     name_of_figure_plot = sprintf('%s_Plots.png', name);
+    % Define the custom headers for the table
+    customHeaders = {'Time(s)_Corrected_Displacement', 'Displacement(micro_meter)_Corrected_Displacement', ...
+                 'Time(s)_Corrected_Load', 'Load(mN)_Corrected_Load', 'Raw_Time(s)_Raw_Displacement', ...
+                 'Displacement(micro_meter)_Raw_Displacement', 'Raw_Time(s)_Raw_Load', 'Load(mN)_Raw_Load'};
+    % Set the VariableNames property of the table to the custom headers
+    data_table.Properties.VariableNames = customHeaders;
     writetable(data_table, new_filename);
     print(name_of_figure_plot,'-dpng','-r600')
     close all;
