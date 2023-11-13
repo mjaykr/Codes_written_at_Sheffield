@@ -64,24 +64,33 @@ for k = 1:length(files)
             % This allows you to access the table from the MATLAB workspace.
             assignin('base', 'converted_data', data_table);
             
-            %% Removing the Rows having Positive or Zero time before negative time
+            %% Removing the Rows having inconsistent time at the beginning of the Experiments
+            % Original number of rows
+            originalRowCount = size(data_table, 1);
             
-            % Find the index of the first negative value in the 'Time_Corrected_Displacement' column
-            is_negative = data_table.Time_Corrected_Displacement < 0;
+            % Initialize an index to keep track of rows to be removed
+            rowsToRemove = false(size(data_table, 1), 1); % Initially, mark all rows as 'false' (not to be removed)
             
-            % Find the first occurrence of a negative value
-            first_negative_index = find(is_negative, 1, 'first');
-            
-            % Check if there is at least one negative value
-            if ~isempty(first_negative_index)
-                % Check if the first value is non-negative and if there are positive values before the first negative value
-                if first_negative_index > 1 && data_table.Time_Corrected_Displacement(1) >= 0
-                    % Remove the rows from the start until the first negative value (excluding the first negative value)
-                    data_table(1:first_negative_index-1, :) = [];
+            % Loop through the Time_Corrected_Displacement column
+            for i = 2:size(data_table, 1)
+                % If the current value is less than or equal to the previous one
+                if data_table.Time_Corrected_Displacement(i) <= data_table.Time_Corrected_Displacement(i - 1)
+                    rowsToRemove(i-1) = true; % Mark this row for removal
                 end
             end
             
-            % If there are no negative values, no rows are removed.
+            % Remove the marked rows
+            data_table(rowsToRemove, :) = [];
+            
+            % Calculate the number of rows deleted
+            rowsDeleted = originalRowCount - size(data_table, 1);
+            
+            % Output the message only if rows have been deleted
+            if rowsDeleted > 0
+                fprintf('In file %s, %d rows have been deleted to ensure Time_Corrected_Displacement is monotonically increasing.\n', filename, rowsDeleted);
+            end
+            
+            % The modified data_table now has only rows where Time_Corrected_Displacement is monotonically increasing.
             
             %% Zero Correction 
             
@@ -112,7 +121,7 @@ for k = 1:length(files)
             end
             % Now the 'Time_Corrected_Displacement' column has been zero-corrected based on 'Displacement_Corrected_Displacement' conditions.
             
-            %% Unit Conversions from SI to relevant unit
+            %% Unit Conversions from SI to the relevant unit
             
             % Conversion factor from meters to micrometers
             meters_to_micrometers = 1e6;
@@ -168,7 +177,7 @@ for k = 1:length(files)
             % Adjust the figure properties for better spacing
             set(gcf, 'Color', 'w', 'Position', [100, 100, 1200, 400]); % Set the figure size and position
             
-            % If you want to save this combined figure for inclusion in a publication, you can do so with high resolution
+            % If you want to save this combined figure for inclusion in a publication, you can do so with high-resolution
             % Uncomment the following line to save the figure
             % print('combined_plots','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
             
