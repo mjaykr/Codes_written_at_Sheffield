@@ -145,7 +145,8 @@ for k = 1:length(files)
             %% Plotting the Data
             %%%%% Creating all figures in one Plot %%%%%%%%%
             % Create a figure window
-            figure;
+            [~, name] = fileparts(filename); % Extract the base name without extension
+            figure('Name',name);
             % tiledlayout('flow', 'TileSpacing', 'compact', 'Padding', 'compact');
             % First subplot for Displacement vs. Load
             subplot(1, 3, 1); % 1 row, 3 columns, 1st subplot
@@ -252,27 +253,27 @@ for k = 1:length(files)
             % % If you want to save this figure for inclusion in a publication, you can do so with high resolution
             % % Uncomment the following line to save the figure
             % % print('myplot','-dpng','-r600'); % Saves the figure as a PNG with 600 DPI
-
-
-
-
-   [~, name] = fileparts(filename); % Extract the base name without extension
-    new_filename = sprintf('%s_processed.xlsx', name);
-    name_of_figure_plot = sprintf('%s_Plots.png', name);
-    % Define the custom headers for the table
-    customHeaders = {'Time(s)_Corrected_Displacement', 'Displacement(micro_meter)_Corrected_Displacement', ...
-                 'Time(s)_Corrected_Load', 'Load(mN)_Corrected_Load', 'Raw_Time(s)_Raw_Displacement', ...
-                 'Displacement(micro_meter)_Raw_Displacement', 'Raw_Time(s)_Raw_Load', 'Load(mN)_Raw_Load'};
-    % Set the VariableNames property of the table to the custom headers
-    data_table.Properties.VariableNames = customHeaders;
-    writetable(data_table, new_filename);
-    print(name_of_figure_plot,'-dpng','-r600')
-    close all;
-    % You might want to clear variables that will be reused in the next iteration
-    clear raw_data processed_data data_table;
+            
+            %% Saving Figures and Processed Excel files
+                new_filename = sprintf('%s_processed.xlsx', name);
+                name_of_figure_plot = sprintf('%s_Plots.png', name);
+                % Define the custom headers for the table
+                customHeaders = {'Time(s)_Corrected_Displacement', 'Displacement(micro_meter)_Corrected_Displacement', ...
+                             'Time(s)_Corrected_Load', 'Load(mN)_Corrected_Load', 'Raw_Time(s)_Raw_Displacement', ...
+                             'Displacement(micro_meter)_Raw_Displacement', 'Raw_Time(s)_Raw_Load', 'Load(mN)_Raw_Load'};
+                % Set the VariableNames property of the table to the custom headers
+                data_table.Properties.VariableNames = customHeaders;
+                writetable(data_table, new_filename);
+                print(name_of_figure_plot,'-dpng','-r600')
+                close all;
+                % You might want to clear variables that will be reused in the next iteration
+                clear raw_data processed_data data_table;
 end
 
 % At this point, each .xlsx file has been processed and saved with '_processed' suffix
+
+
+
 
 %% Delete some patterned Files
 
