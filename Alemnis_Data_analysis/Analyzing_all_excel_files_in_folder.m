@@ -150,7 +150,7 @@ for k = 1:length(files)
             % tiledlayout('flow', 'TileSpacing', 'compact', 'Padding', 'compact');
             % First subplot for Displacement vs. Load
             subplot(1, 3, 1); % 1 row, 3 columns, 1st subplot
-            plot(data_table.Time_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+            plot(data_table.Time_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 1.5);
             xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 14);
             ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 14);
             title('Time vs. Load'); % Optional: Add a title to the subplot
@@ -159,7 +159,7 @@ for k = 1:length(files)
             
             % Second subplot for Time vs. Displacement
             subplot(1, 3, 2); % 1 row, 3 columns, 2nd subplot
-            plot(data_table.Time_Corrected_Displacement, data_table.Displacement_Corrected_Displacement, 'LineWidth', 2);
+            plot(data_table.Time_Corrected_Displacement, data_table.Displacement_Corrected_Displacement, 'LineWidth', 1.5);
             xlabel('Time, s', 'Interpreter', 'latex', 'FontSize', 14);
             ylabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 14);
             title('Time vs. Displacement'); % Optional: Add a title to the subplot
@@ -168,7 +168,7 @@ for k = 1:length(files)
             
             % Third subplot for Time vs. Load
             subplot(1, 3, 3); % 1 row, 3 columns, 3rd subplot
-            plot(data_table.Displacement_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 2);
+            plot(data_table.Displacement_Corrected_Displacement, data_table.Load_Corrected_Load, 'LineWidth', 1.5);
             xlabel('Displacement, $\mu$m', 'Interpreter', 'latex', 'FontSize', 14);
             ylabel('Load, mN', 'Interpreter', 'latex', 'FontSize', 14);
             title('Displacement vs. Load'); % Optional: Add a title to the subplot
