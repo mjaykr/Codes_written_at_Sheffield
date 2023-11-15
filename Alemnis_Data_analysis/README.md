@@ -6,7 +6,7 @@ Understanding the intricacies of material behavior under various loading conditi
 
 **Detailed Overview of Data Structure in Alemnis Experiments**
 
-Alemnis Standard Assembly (ASA) experiments typically generate comprehensive datasets that offer a snapshot into the mechanical properties of materials at a microscale level. The data structure of such experiments is captured in Excel spreadsheets, meticulously organized into several columns, each representing a different aspect of the experiment. Here's a breakdown of what each column usually signifies:
+Alemnis Standard Assembly (ASA) experiments typically generate comprehensive datasets that offer a snapshot into the mechanical properties of materials at a microscale level. The data structure of such experiments is captured in Excel spreadsheets (Do not import the file in *.txt file, as you will get two different displacements at the same time due to round-off error), meticulously organized into several columns, each representing a different aspect of the experiment. Here's a breakdown of what each column usually signifies:
 
 1. **Time Columns (1, 3, 5, and 7)**: These columns record the time at which the corresponding measurements (like displacement or load) are taken. The time data could be formatted in several ways:
     - **Negative Time Values**: Indicative of pre-test calibrations or specific test protocols that might require the measurement to commence from a negative timestamp, leading up to zero to mark the beginning of the actual test.
