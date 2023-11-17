@@ -1,4 +1,6 @@
 % Get a list of all files with .tif extension in the current directory
+currentDirectory = pwd;
+[path, folderName, ~] = fileparts(currentDirectory);
 files = dir('*.tif');
 numfiles = length(files);
 
@@ -6,7 +8,7 @@ numfiles = length(files);
 targetWidth = 1080;
 
 % Set the name for the GIF file
-gifName = fullfile(pwd, 'animated_sequence.gif');
+gifName = fullfile(pwd, [folderName,'.gif']);
 
 % Loop through each file, resize it, and convert it
 for k = 1:numfiles
