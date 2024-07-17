@@ -13,7 +13,7 @@ for k = 1:length(files)
             processed_data = raw_data; % This creates a copy of the raw_data to preserve the original
             
             % Prepare a map for unit conversion factors to convert units like pico, micro, nano, milli to their respective multipliers
-            unit_conversion = containers.Map({'p', 'u', 'n', 'm'}, [1e-12, 1e-6, 1e-9, 1e-3]);
+            unit_conversion = containers.Map({'f', 'p', 'u', 'n', 'm'}, [1e-15, 1e-12, 1e-6, 1e-9, 1e-3]);
             
             % Process the data for columns with units (2, 4, 6, 8)
             for col = [2, 4, 6, 8] 
