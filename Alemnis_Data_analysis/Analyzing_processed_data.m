@@ -1,4 +1,4 @@
-% MATLAB Script: Correct Experiment Start and Prepare Output for External Plotter
+% MATLAB Script: Correct Experiment Start Considering Both Load and Displacement
 
 % Define the filename
 filename = dir('*_processed.xlsx'); % Finds any file with *_processed.xlsx
@@ -26,18 +26,23 @@ load = data{:, 4};           % Fourth column (Load)
 
 % Determine the start of the experiment
 positiveDisplacementIdx = find(displacement > 0, 1); % First positive displacement
-if isempty(positiveDisplacementIdx)
-    error('No positive values found in Displacement column.');
+positiveLoadIdx = find(load > 0, 1);                 % First positive load
+
+if isempty(positiveDisplacementIdx) || isempty(positiveLoadIdx)
+    error('No positive values found in Displacement or Load columns.');
 end
 
-% Find the point where displacement remains positive thereafter
-startIdx = positiveDisplacementIdx; % Initial guess
-while startIdx < length(displacement) && any(displacement(startIdx:end) < 0)
+% Ensure experiment starts when both Displacement and Load have positive values
+startIdx = max(positiveDisplacementIdx, positiveLoadIdx);
+
+% Find the point where displacement remains positive and load starts applying
+while startIdx < length(displacement) && ...
+      (any(displacement(startIdx:end) < 0) || any(load(startIdx:end) <= 0))
     startIdx = startIdx + 1;
 end
 
 if startIdx > length(displacement)
-    error('Displacement does not stabilize to positive values.');
+    error('Valid start point not found where both Displacement and Load are consistently positive.');
 end
 
 % Adjust time to start from zero
