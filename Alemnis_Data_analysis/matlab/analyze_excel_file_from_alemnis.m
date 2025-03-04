@@ -195,6 +195,15 @@ function plotCombined(data_table, name)
     subplot(1, 3, 3);
     xData3 = data_table.Displacement_Corrected_Displacement;
     yData3 = data_table.Load_Corrected_Load;
+
+    % Filter out negative values
+    valid_indices = xData3 >= 0 & yData3 >= 0;
+    xData3 = xData3(valid_indices);
+    yData3 = yData3(valid_indices);
+    
+    % Adjust x values to start from 0
+    xData3 = xData3 - xData3(1);
+
     plot(xData3, yData3, 'LineWidth', 1.5);
     xLabel3 = 'Displacement, µm';
     yLabel3 = 'Load, mN';
@@ -249,6 +258,13 @@ function plotDisplacementVsLoad(data_table)
     figure;
     xData = data_table.Displacement_Corrected_Displacement;
     yData = data_table.Load_Corrected_Load;
+    % Filter out negative values
+    valid_indices = xData >= 0 & yData >= 0;
+    xData = xData(valid_indices);
+    yData = yData(valid_indices);
+    
+    % Adjust x values to start from 0
+    xData = xData - xData(1);
     
     plot(xData, yData, 'LineWidth', 2);
     xLabel = 'Displacement, µm';
