@@ -31,10 +31,10 @@ function processFile(filename)
     data_table = convertToRelevantUnits(data_table);
     
     % Step 7: Generate plots
-    generatePlots(data_table, name);
+    generatePlots(data_table, name, filename);
     
     % Step 8: Save results
-    saveResults(data_table, name);
+    saveResults(data_table, name, filename);
 end
 
 function raw_data = loadExcelData(filename)
@@ -157,19 +157,19 @@ function data_table = convertToRelevantUnits(data_table)
         data_table.Load_Corrected_Load * newtons_to_milli_newtons;
 end
 
-function generatePlots(data_table, name)
+function generatePlots(data_table, name, filename)
     % Generate all required plots
     
     % Create combined plot
-    plotCombined(data_table, name);
+    plotCombined(data_table, name, filename);
     
     % Create individual plots
-    plotTimeVsDisplacement(data_table);
-    plotTimeVsLoad(data_table);
-    plotDisplacementVsLoad(data_table);
+    plotTimeVsDisplacement(data_table, filename);
+    plotTimeVsLoad(data_table, filename);
+    plotDisplacementVsLoad(data_table, filename);
 end
 
-function plotCombined(data_table, name)
+function plotCombined(data_table, name, filename)
     % Create combined plot with three subplots
     figure('Name', name);
     
@@ -225,15 +225,15 @@ function plotCombined(data_table, name)
     set(gcf, 'Color', 'w', 'Position', [100, 100, 1200, 400]);
     
     % Save combined plot
-    print('combined_plots', '-dpng', '-r600');
+    print(sprintf('%s_combined_plots.png', filename), '-dpng', '-r600');
     
     % Save data from each subplot
     % savePlotData(xData1, yData1, xLabel1, yLabel1, [name, '_time_vs_load']);
     % savePlotData(xData2, yData2, xLabel2, yLabel2, [name, '_time_vs_displacement']);
-    savePlotData(xData3, yData3, xLabel3, yLabel3, [name, '_displacement_vs_load']);
+    % savePlotData(xData3, yData3, xLabel3, yLabel3, sprintf('%s_displacement_vs_load.csv', filename));
 end
 
-function plotTimeVsDisplacement(data_table)
+function plotTimeVsDisplacement(data_table, filename)
     % Create Time vs Displacement plot
     figure;
     xData = data_table.Time_Corrected_Displacement;
@@ -243,13 +243,13 @@ function plotTimeVsDisplacement(data_table)
     xLabel = 'Time, s';
     yLabel = 'Displacement, µm';
     formatPlot(xLabel, yLabel, '');
-    print('myplot_time_vs_displacement', '-dpng', '-r600');
+    print(sprintf('%s_time_vs_displacement.png', filename), '-dpng', '-r600');
     
     % Save the plotted data
     % savePlotData(xData, yData, xLabel, yLabel, 'data_time_vs_displacement');
 end
 
-function plotTimeVsLoad(data_table)
+function plotTimeVsLoad(data_table, filename)
     % Create Time vs Load plot
     figure;
     xData = data_table.Time_Corrected_Displacement;
@@ -270,13 +270,13 @@ function plotTimeVsLoad(data_table)
     xLabel = 'Time, s';
     yLabel = 'Load, mN';
     formatPlot(xLabel, yLabel, '');
-    print('myplot_time_vs_load', '-dpng', '-r600');
+    print(sprintf('%s_time_vs_load.png', filename), '-dpng', '-r600');
     
     % (Optional) Save the plotted data
     % savePlotData(xData, yData, xLabel, yLabel, 'data_time_vs_load');
 end
 
-function plotDisplacementVsLoad(data_table)
+function plotDisplacementVsLoad(data_table, filename)
     % Create Displacement vs Load plot
     figure;
     xData = data_table.Displacement_Corrected_Displacement;
@@ -293,10 +293,15 @@ function plotDisplacementVsLoad(data_table)
     xLabel = 'Displacement, µm';
     yLabel = 'Load, mN';
     formatPlot(xLabel, yLabel, '');
-    print('myplot_load_displacement', '-dpng', '-r600');
+    print(sprintf('%s_load_displacement.png', filename), '-dpng', '-r600');
     
     % Save the plotted data
-    % savePlotData(xData, yData, xLabel, yLabel, 'data_displacement_vs_load');
+    savePlotData(xData, yData, xLabel, yLabel, sprintf('%s_displacement_vs_load', filename));
+    
+    % Save the data as .xlsx and .mat files
+    data_table = table(xData, yData, 'VariableNames', {'Displacement_um', 'Load_mN'});
+    writetable(data_table, sprintf('%s_displacement_vs_load.xlsx', filename));
+    save(sprintf('%s_displacement_vs_load.mat', filename), 'xData', 'yData');
 end
 
 function formatPlot(xLabel, yLabel, titleText)
@@ -324,7 +329,7 @@ function formatPlot(xLabel, yLabel, titleText)
     set(gcf, 'Color', 'w');
 end
 
-function saveResults(data_table, name)
+function saveResults(data_table, name, filename)
     % Save processed data and figures
     new_filename = sprintf('%s_processed.xlsx', name);
     name_of_figure_plot = sprintf('%s_Plots.png', name);
@@ -344,6 +349,7 @@ function saveResults(data_table, name)
     % Close all figures
     close all;
 end
+
 function savePlotData(xData, yData, xLabel, yLabel, filename)
     % Remove units and formatting from labels to make them valid headers
     xHeader = strrep(xLabel, ', ', '_');
