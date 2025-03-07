@@ -177,6 +177,18 @@ function plotCombined(data_table, name)
     subplot(1, 3, 1);
     xData1 = data_table.Time_Corrected_Displacement;
     yData1 = data_table.Load_Corrected_Load;
+    
+    % Threshold-based filtering
+    threshold = 0.1; % Adjust as needed
+    valid_indices = yData1 > threshold;
+    xData1 = xData1(valid_indices);
+    yData1 = yData1(valid_indices);
+    
+    % Shift time to start at 0
+    if ~isempty(xData1)
+        xData1 = xData1 - xData1(1);
+    end
+    
     plot(xData1, yData1, 'LineWidth', 1.5);
     xLabel1 = 'Time, s';
     yLabel1 = 'Load, mN';
@@ -243,13 +255,24 @@ function plotTimeVsLoad(data_table)
     xData = data_table.Time_Corrected_Displacement;
     yData = data_table.Load_Corrected_Load;
     
+    % Define a small threshold to ignore insignificant loads
+    threshold = 0.1; % Adjust as needed
+    valid_indices = yData > threshold;  
+    xData = xData(valid_indices);
+    yData = yData(valid_indices);
+    
+    % Shift time to start from 0
+    if ~isempty(xData)
+        xData = xData - xData(1);
+    end
+    
     plot(xData, yData, 'LineWidth', 2);
     xLabel = 'Time, s';
     yLabel = 'Load, mN';
     formatPlot(xLabel, yLabel, '');
     print('myplot_time_vs_load', '-dpng', '-r600');
     
-    % Save the plotted data
+    % (Optional) Save the plotted data
     % savePlotData(xData, yData, xLabel, yLabel, 'data_time_vs_load');
 end
 
@@ -277,15 +300,27 @@ function plotDisplacementVsLoad(data_table)
 end
 
 function formatPlot(xLabel, yLabel, titleText)
-    % Apply consistent formatting to plots
     xlabel(xLabel, 'Interpreter', 'tex', 'FontSize', 14);
     ylabel(yLabel, 'Interpreter', 'tex', 'FontSize', 14);
     if ~isempty(titleText)
-        title(titleText);
+        title(titleText, 'FontSize', 14);
     end
-    set(gca, 'Box', 'on', 'GridLineStyle', '-', 'LineWidth', 1, ...
-        'FontName', 'Times New Roman', 'FontSize', 14, 'TickDir', 'out');
-    grid on;
+    
+    ax = gca;
+    set(ax, ...
+        'Box', 'on', ...
+        'BoxStyle', 'full', ...        % Requires R2019b or newer
+        'TickDir', 'in', ...
+        'TickLength', [0.02 0.02], ...
+        'XMinorTick', 'on', ...
+        'YMinorTick', 'on', ...
+        'LineWidth', 1.5, ...
+        'FontName', 'Times New Roman', ...
+        'FontSize', 14, ...
+        'XGrid', 'off', ...
+        'YGrid', 'off', ...
+        'MinorGridLineStyle', 'none');
+
     set(gcf, 'Color', 'w');
 end
 
