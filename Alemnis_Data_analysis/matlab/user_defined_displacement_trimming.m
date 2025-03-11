@@ -258,12 +258,74 @@ function generatePlotsWithUserRange(data_table, name, filename)
     trim_indices = trimmed_data.Displacement_Corrected_Displacement <= user_max;
     trimmed_data = trimmed_data(trim_indices, :);
     
+    % Generate full range combined plot first (without trimming)
+    createFullRangeCombinedPlot(data_table, name, filename);
+    
     % Now generate and save all plots with the final selected range
     createAllPlots(trimmed_data, name, filename, user_max);
     saveAllPlots(filename, user_max);
     saveFinalData(trimmed_data, filename, user_max);
     
     fprintf('All plots generated and saved with maximum displacement of %.2f µm\n', user_max);
+end
+
+function createFullRangeCombinedPlot(data_table, name, filename)
+    % Create combined plot with three subplots using the full data range
+    figure('Name', [name, ' - Full Range Combined Plots'], 'Position', [100, 100, 1200, 400]);
+    
+    % Time vs Load subplot
+    subplot(1, 3, 1);
+    xData1 = data_table.Time_Corrected_Displacement;
+    yData1 = data_table.Load_Corrected_Load;
+    
+    % Threshold-based filtering
+    threshold = 0.1; % Adjust as needed
+    valid_indices = yData1 > threshold;
+    xData1 = xData1(valid_indices);
+    yData1 = yData1(valid_indices);
+    
+    % Shift time to start at 0
+    if ~isempty(xData1)
+        xData1 = xData1 - xData1(1);
+    end
+    
+    plot(xData1, yData1, 'LineWidth', 1.5);
+    xLabel1 = 'Time, s';
+    yLabel1 = 'Load, mN';
+    formatPlot(xLabel1, yLabel1, 'Time vs. Load');
+    
+    % Time vs Displacement subplot
+    subplot(1, 3, 2);
+    xData2 = data_table.Time_Corrected_Displacement;
+    yData2 = data_table.Displacement_Corrected_Displacement;
+    plot(xData2, yData2, 'LineWidth', 1.5);
+    xLabel2 = 'Time, s';
+    yLabel2 = 'Displacement, µm';
+    formatPlot(xLabel2, yLabel2, 'Time vs. Displacement');
+    
+    % Displacement vs Load subplot
+    subplot(1, 3, 3);
+    xData3 = data_table.Displacement_Corrected_Displacement;
+    yData3 = data_table.Load_Corrected_Load;
+
+    % Filter out negative values
+    valid_indices = xData3 >= 0 & yData3 >= 0;
+    xData3 = xData3(valid_indices);
+    yData3 = yData3(valid_indices);
+    
+    % Adjust x values to start from 0
+    xData3 = xData3 - xData3(1);
+
+    plot(xData3, yData3, 'LineWidth', 1.5);
+    xLabel3 = 'Displacement, µm';
+    yLabel3 = 'Load, mN';
+    formatPlot(xLabel3, yLabel3, 'Displacement vs. Load');
+    
+    % Add information to the figure title
+    sgtitle('Full Range Plots (No Trimming)', 'FontSize', 16, 'FontWeight', 'bold');
+    
+    % Adjust figure properties
+    set(gcf, 'Color', 'w');
 end
 
 function createAllPlots(data_table, name, filename, max_displacement)
