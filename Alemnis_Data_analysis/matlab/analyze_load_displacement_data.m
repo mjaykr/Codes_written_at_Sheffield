@@ -6,6 +6,10 @@ data = readtable(files(1).name);
 displacement = data{:,1}; % Displacement in micrometers
 load = data{:,2};         % Load in millinewtons
 
+% Stiffness calculation Range
+start_linear_range = 0.1;
+end_linear_range = 0.3;
+
 % Create a plot of load vs. displacement
 figure;
 h1 = plot(displacement, load, 'b-', 'LineWidth', 1.5); % Handle for load-displacement curve
@@ -26,7 +30,7 @@ energy_to_fracture = trapz(displacement(1:idx), load(1:idx));
 fprintf('Energy to Fracture: %.2f nJ\n', energy_to_fracture); % 1 mN*um = 1 nJ
 
 % Calculate stiffness from the initial linear portion (30% to 60% of max_load)
-idx_stiffness = find(load >= 0.3*max_load & load <= 0.6*max_load & (1:length(load))' <= idx);
+idx_stiffness = find(load >= start_linear_range*max_load & load <= end_linear_range*max_load & (1:length(load))' <= idx);
 if ~isempty(idx_stiffness)
     p = polyfit(displacement(idx_stiffness), load(idx_stiffness), 1);
     stiffness = p(1);
