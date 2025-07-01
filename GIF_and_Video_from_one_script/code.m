@@ -13,64 +13,72 @@ if numfiles == 0
     error('No .tif files found in the current folder.');
 end
 
-% Define the target width
-targetWidth = 1080;
+% Read the first image to get its width
+[imgFirst, cmapFirst] = imread(files(1).name);
+
+% Convert to RGB if needed
+if size(imgFirst, 3) ~= 3
+    if isempty(cmapFirst)
+        imgFirst = repmat(imgFirst, [1, 1, 3]);
+    else
+        imgFirst = ind2rgb(imgFirst, cmapFirst);
+    end
+end
+imgFirst = im2uint8(imgFirst); % ensure uint8
+
+% Use first image's width as targetWidth
+targetWidth = size(imgFirst, 2);
+aspectRatio = size(imgFirst, 2) / size(imgFirst, 1);
+targetHeight = round(targetWidth / aspectRatio);
+
+% Ensure both width and height are even
+if mod(targetWidth, 2) ~= 0
+    targetWidth = targetWidth + 1;
+end
+if mod(targetHeight, 2) ~= 0
+    targetHeight = targetHeight + 1;
+end
 
 % Set the name for the GIF file
 gifName = fullfile(pwd, [folderName, '.gif']);
 
-% Ask user for frame rate
-% frameRate = input('Enter the frame rate for the video: ');
-frameRate = 3;
+% Frame rate setting
+frameRate = 10;
 
-% Create a VideoWriter object
+% Create VideoWriter object
 outputVideo = VideoWriter(fullfile(currentDirectory, folderName), 'MPEG-4');
 outputVideo.FrameRate = frameRate;
-
-% Open the video file for writing
 open(outputVideo);
 
-% Loop through each file, resize it, and convert it
+% Loop through each file
 for k = 1:numfiles
-    % Read the image
     [img, cmap] = imread(files(k).name);
     
-    % Check if the image is grayscale or indexed and convert to RGB if necessary
     if size(img, 3) ~= 3
-        if isempty(cmap)  % Image is grayscale
+        if isempty(cmap)
             img = repmat(img, [1, 1, 3]);
-        else  % Image is indexed
+        else
             img = ind2rgb(img, cmap);
         end
     end
     
-    % Ensure the image is uint8
     if ~isa(img, 'uint8')
         img = im2uint8(img);
     end
     
-    % Calculate the new height to maintain the aspect ratio
-    aspectRatio = size(img, 2) / size(img, 1);
-    newHeight = round(targetWidth / aspectRatio);
+    resizedImg = imresize(img, [targetHeight, targetWidth]);
     
-    % Resize the image
-    resizedImg = imresize(img, [newHeight, targetWidth]);
-    
-    % Convert the image to indexed color
     [A, map] = rgb2ind(resizedImg, 256);
     
-    % Write the frame to the GIF file
     if k == 1
-        imwrite(A, map, gifName, 'gif', 'LoopCount', Inf, 'DelayTime', 0.1);
+        imwrite(A, map, gifName, 'gif', 'LoopCount', Inf, 'DelayTime', 1/frameRate);
     else
-        imwrite(A, map, gifName, 'gif', 'WriteMode', 'append', 'DelayTime', 0.1);
+        imwrite(A, map, gifName, 'gif', 'WriteMode', 'append', 'DelayTime', 1/frameRate);
     end
     
-    % Write the resized image to the video
     writeVideo(outputVideo, resizedImg);
 end
 
-% Close the video file
 close(outputVideo);
 
 disp(['Animated GIF saved as ', gifName]);
