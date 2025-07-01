@@ -8,15 +8,12 @@ currentDirectory = pwd;
 files = dir('*.tif');
 numfiles = length(files);
 
-% Check if there are any .tif files in the folder
 if numfiles == 0
     error('No .tif files found in the current folder.');
 end
 
-% Read the first image to get its width
+% Read the first image to define dimensions
 [imgFirst, cmapFirst] = imread(files(1).name);
-
-% Convert to RGB if needed
 if size(imgFirst, 3) ~= 3
     if isempty(cmapFirst)
         imgFirst = repmat(imgFirst, [1, 1, 3]);
@@ -24,36 +21,35 @@ if size(imgFirst, 3) ~= 3
         imgFirst = ind2rgb(imgFirst, cmapFirst);
     end
 end
-imgFirst = im2uint8(imgFirst); % ensure uint8
+imgFirst = im2uint8(imgFirst);
 
-% Use first image's width as targetWidth
 targetWidth = size(imgFirst, 2);
 aspectRatio = size(imgFirst, 2) / size(imgFirst, 1);
 targetHeight = round(targetWidth / aspectRatio);
+if mod(targetWidth,2) ~= 0, targetWidth = targetWidth + 1; end
+if mod(targetHeight,2) ~= 0, targetHeight = targetHeight + 1; end
 
-% Ensure both width and height are even
-if mod(targetWidth, 2) ~= 0
-    targetWidth = targetWidth + 1;
-end
-if mod(targetHeight, 2) ~= 0
-    targetHeight = targetHeight + 1;
-end
-
-% Set the name for the GIF file
+% Set file names
 gifName = fullfile(pwd, [folderName, '.gif']);
+compressedGifName = fullfile(pwd, [folderName, '_compressed.gif']);
+videoName = fullfile(pwd, [folderName, '.mp4']);
 
-% Frame rate setting
-frameRate = 10;
+% Frame rate and delay time
+frameRate = 3;
+delayTime = 1 / frameRate;
 
-% Create VideoWriter object
-outputVideo = VideoWriter(fullfile(currentDirectory, folderName), 'MPEG-4');
+% Initialize video writer
+outputVideo = VideoWriter(videoName, 'MPEG-4');
 outputVideo.FrameRate = frameRate;
 open(outputVideo);
 
-% Loop through each file
+% Store frames in cell for re-use if needed
+frames = cell(1, numfiles);
+
+% Loop through each frame
 for k = 1:numfiles
     [img, cmap] = imread(files(k).name);
-    
+
     if size(img, 3) ~= 3
         if isempty(cmap)
             img = repmat(img, [1, 1, 3]);
@@ -61,25 +57,45 @@ for k = 1:numfiles
             img = ind2rgb(img, cmap);
         end
     end
-    
-    if ~isa(img, 'uint8')
-        img = im2uint8(img);
-    end
-    
+    img = im2uint8(img);
     resizedImg = imresize(img, [targetHeight, targetWidth]);
-    
-    [A, map] = rgb2ind(resizedImg, 256);
-    
-    if k == 1
-        imwrite(A, map, gifName, 'gif', 'LoopCount', Inf, 'DelayTime', 1/frameRate);
-    else
-        imwrite(A, map, gifName, 'gif', 'WriteMode', 'append', 'DelayTime', 1/frameRate);
-    end
-    
+    frames{k} = resizedImg;
+
+    % Write to video
     writeVideo(outputVideo, resizedImg);
 end
-
 close(outputVideo);
 
-disp(['Animated GIF saved as ', gifName]);
-disp(['Video created successfully: ', fullfile(currentDirectory, [folderName, '.mp4'])]);
+% --------- Write original GIF at full resolution ---------
+for k = 1:numfiles
+    [A, map] = rgb2ind(frames{k}, 256);
+    if k == 1
+        imwrite(A, map, gifName, 'gif', 'LoopCount', Inf, 'DelayTime', delayTime);
+    else
+        imwrite(A, map, gifName, 'gif', 'WriteMode', 'append', 'DelayTime', delayTime);
+    end
+end
+
+% --------- Check size of GIF and write compressed version if needed ---------
+gifInfo = dir(gifName);
+if gifInfo.bytes > 30 * 1024 * 1024  % 30 MB in bytes
+    disp('GIF exceeds 30 MB. Writing compressed version...');
+
+    for k = 1:numfiles
+        % Reduce resolution and color depth
+        resizedSmall = imresize(frames{k}, 0.5);  % 50% scaling
+        [A, map] = rgb2ind(resizedSmall, 64);     % 64-color palette
+
+        if k == 1
+            imwrite(A, map, compressedGifName, 'gif', 'LoopCount', Inf, 'DelayTime', delayTime);
+        else
+            imwrite(A, map, compressedGifName, 'gif', 'WriteMode', 'append', 'DelayTime', delayTime);
+        end
+    end
+
+    disp(['Compressed GIF saved as ', compressedGifName]);
+else
+    disp(['GIF saved as ', gifName]);
+end
+
+disp(['Video created successfully: ', videoName]);
